@@ -10,7 +10,7 @@ float* CreateArr(int);
 void FillArr(float *&, int &);
 void PrintArr(float *, int);
 
-void AddEl(float *&, int &, int, float, bool);
+void AddEl(float *&, int &, int, float);
 void RandAdd(float *&, int &);
 void HandAdd(float *&, int &);
 void AddElAfter(float *&, int &);
@@ -154,9 +154,8 @@ void AddEl(float *&arr, int &n, int pos, float num){
             buff[i] = buff[i-1];
         }
         buff[pos]=num;
+        delete[] arr;
         arr = buff;
-        delete[] buff;
-        buff = NULL;
         PrintArr(arr, n);
     }
     else{
@@ -243,9 +242,8 @@ void Delete(float *&arr, int &n, int pos){
         for(int i=pos; i<=n; i++){
             buff[i]=arr[i+1];
         }
+        delete[] arr;
         arr = buff;
-        delete[] buff;
-        buff = NULL;
         PrintArr(arr, n);
     }
 }
