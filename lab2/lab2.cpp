@@ -122,9 +122,12 @@ void GetRandMatr(double** M, int n, int m, int a, int b){
 }
 
 void GilbertMatr(double** M, int n, int m){
+    srand(time(0));
     for(int i=0; i<n; i++)
-        for(int j=0; j<m; j++)
+        for(int j=0; j<m-1; j++)
             M[i][j] = 1./(i+j+1);
+    for(int i=0; i<n; i++)
+        M[i][n] = rand() % 10 - 5;
 }
 
 /* Родительское меню */
@@ -143,7 +146,7 @@ void GetMatr(double** M, int n, int m){
 
         switch(key){
             case 1: GetFileMatr(M, n, n+1); MainMenu(M, n, n+1, "A"); break;
-            case 2: GetRandMatr(M, n, n+1, -1, 2); MainMenu(M, n, n+1, "A"); break;
+            case 2: GetRandMatr(M, n, n+1, -2, 4); MainMenu(M, n, n+1, "A"); break;
             case 3: GilbertMatr(M, n, n+1); MainMenu(M, n, n+1, "A"); break;
             case 0: break;
             default:  system("cls"); 
@@ -267,6 +270,7 @@ double determMatr(double** A, int n, bool flag){
         determ*=-1;
     if(flag == 1){
         system("cls");
+        PrintMatr(A, n, n, "A");
         PrintMatr(B, n, n, "B");
         cout <<"Определитель матрицы системы: " << determ << endl;
         system("pause");
@@ -275,9 +279,7 @@ double determMatr(double** A, int n, bool flag){
 }
 
 void Solve(double** A, int n, double* x, bool flag){
-    system("cls");
     if(determMatr(A, n, 0) == 0){
-        PrintMatr(A, n, n, "A");
         cout << "СЛАУ не имеет решения" << endl;
         system("pause");
         return;
@@ -304,7 +306,9 @@ void Solve(double** A, int n, double* x, bool flag){
 }
 
 void SolveSL(double** M, int n){
+    system("cls");
     double* x = new double[n];
+    PrintMatr(M, n, n+1, "A");
     Solve(M, n, x, 1);
     DelVect(x);
     system("pause");
@@ -328,6 +332,7 @@ void InvMatr(double** M, int n){
             C[i][k] = x[i];
     }
     system("cls");
+    PrintMatr(M, n, n, "A");
     cout << "Обратная матрица системы: " << endl;
     PrintMatr(C, n, n, "C");
     DelVect(x);
@@ -338,6 +343,7 @@ void InvMatr(double** M, int n){
 
 void ErrCalc(double** M, int n){
     system("cls");
+    PrintMatr(M, n, n+1, "A");
     double s=0, delta = 0;
     double* x = new double[n];
     double* b = new double[n];
