@@ -178,10 +178,10 @@ void FindLead(double** M, int n){
     int index_i=0, index_j=0, max = M[0][0];
     for(int i=0; i<n; i++)
         for(int j=0; j<n; j++){
-            if(abs(M[i][j])>max){
-                max = M[i][j];
-                index_i = i;
-                index_j = j;
+            if(abs(M[j][i])>max){
+                max = M[j][i];
+                index_i = j;
+                index_j = i;
             }
         }
     int temp;
@@ -262,6 +262,8 @@ double determMatr(double** A, int n, bool flag){
     for(int i=0; i<n; i++)
         determ*=B[i][i];
     if(count % 2 == 1)
+        determ*=-1;
+    if (determ == -0)
         determ*=-1;
     if(flag == 1){
         system("cls");
