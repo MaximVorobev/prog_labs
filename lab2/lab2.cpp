@@ -22,12 +22,14 @@ void PrintVect(double*, int, const char*);
 // Операции с матрицами
 void FindLead(double**, int);
 void Mult(double**, double**, double**, int, int, int, int);
-void triangMatr(double**, double**, int, bool);
+void triangMatr(double**, double**, int);
 double determMatr(double**, int, bool);
-void Solve(double**, int, double*, bool);
+void Solve(double**, int, double*);
 void SolveSL(double**, int);
 void InvMatr(double**, int);
 void ErrCalc(double**, int);
+void ReturnView(double**, int, bool);
+void returnVect(double*&);
 void DelMatr(double**&, int);
 void DelVect(double*&);
 
@@ -35,7 +37,7 @@ void DelVect(double*&);
 void MainMenu(double**, int, int, const char*);
 void GetMatr(double**, int, int);
 
-int count = 0;  // Подсчет перестановок строк и столбцов
+int count = 0, index_i = 0, index_j = 0;  // Подсчет перестановок строк и столбцов
 
 int main(){
     int n;
@@ -178,7 +180,7 @@ void PrintVect(double* x, int n, const char* nameres){
 
 /* Поиск ведущего элемента и перестановка строк и столбцов */
 void FindLead(double** M, int n){
-    int index_i=0, index_j=0, max = M[0][0];
+    int max = M[0][0];
     for(int i=0; i<n; i++)
         for(int j=0; j<n; j++){
             if(abs(M[j][i])>max){
@@ -226,14 +228,12 @@ void Mult(double** M1, double** M2, double** res, int n1, int m1, int n2, int m2
 }
 
 /* Решение с помощью метода Гаусса */
-void triangMatr(double** A, double** B, int n, bool flag){
+void triangMatr(double** A, double** B, int n){
     double koef;
     for(int i=0; i<n; i++)
         for(int j=0; j<n+1; j++)
             B[i][j] = A[i][j];
-    if (flag == 1){
-        FindLead(B, n);
-        }
+    FindLead(B, n);
     double temp = 0;
     for(int i=1; i<n; i++){
         if(B[i][i] == 0){
@@ -261,7 +261,7 @@ double determMatr(double** A, int n, bool flag){
     double **B;
     double determ=1;
     NewMatr(B, n, n+1);
-    triangMatr(A, B, n, 1);
+    triangMatr(A, B, n);
     for(int i=0; i<n; i++)
         determ*=B[i][i];
     if(count % 2 == 1)
@@ -278,7 +278,7 @@ double determMatr(double** A, int n, bool flag){
     return determ;
 }
 
-void Solve(double** A, int n, double* x, bool flag){
+void Solve(double** A, int n, double* x){
     if(determMatr(A, n, 0) == 0){
         cout << "СЛАУ не имеет решения" << endl;
         system("pause");
@@ -287,12 +287,7 @@ void Solve(double** A, int n, double* x, bool flag){
     double res = 0;
     double **B;
     NewMatr(B, n, n+1);
-    if(flag == 1){
-        triangMatr(A, B, n, 1);
-    }
-    else{
-        triangMatr(A, B, n, 0);
-    }
+    triangMatr(A, B, n);
     for(int i=n-1; i>=0; i--){
         res = 0;
         for(int j=i+1; j<=n-1; j++)
@@ -301,6 +296,7 @@ void Solve(double** A, int n, double* x, bool flag){
         x[i]=res/B[i][i];
     }
     PrintMatr(B, n, n+1, "B");
+    returnVect(x);
     PrintVect(x, n, "x");
     DelMatr(B, n);
 }
@@ -309,7 +305,7 @@ void SolveSL(double** M, int n){
     system("cls");
     double* x = new double[n];
     PrintMatr(M, n, n+1, "A");
-    Solve(M, n, x, 1);
+    Solve(M, n, x);
     DelVect(x);
     system("pause");
 }
@@ -327,7 +323,8 @@ void InvMatr(double** M, int n){
         for(int i=0; i<n; i++)
             B[i][n] = 0;
         B[k][n] = 1;
-        Solve(B, n, x, 0);
+        Solve(B, n, x);
+        ReturnView(B, n, 1);
         for(int i=0; i<n; i++)
             C[i][k] = x[i];
     }
@@ -350,7 +347,7 @@ void ErrCalc(double** M, int n){
     double* b1 = new double[n];
     for(int i=0; i<n; i++)
         b[i] = M[i][n];
-    Solve(M, n, x, 1);
+    Solve(M, n, x);
     for(int i=0; i<n; i++){
         s = 0;
         for(int j=0; j<n; j++)
@@ -369,6 +366,35 @@ void ErrCalc(double** M, int n){
     system("pause");
 }
 
+/* Возвращение матрицы к изначальному виду*/
+void ReturnView(double** M, int n, bool flag){
+    double temp = 0;
+    if(flag == 1){
+        if (index_i!=0){
+            for(int i=0; i<n+1; i++){
+                temp = M[index_i][i];
+                M[index_i][i] = M[0][i];
+                M[0][i] = temp;
+            }
+        }
+    }
+    if(index_j!=0){
+        for(int i=0; i<n; i++){
+            temp = M[i][0];
+            M[i][0] = M[i][index_j];
+            M[i][index_j] = temp;
+        }
+    }
+}
+
+void returnVect(double*& x){
+    double temp = 0;
+    if(index_j!=0){
+        temp = x[index_j];
+        x[index_j] = x[0];
+        x[0] = temp;
+    }
+}
 /* Очистка памяти */
 void DelMatr(double**& M, int n){
     for(int i=0; i<n; i++)
