@@ -127,6 +127,13 @@ void userPush(Stack& s){
     Pen pen;
     cout << "Enter color, price, color of ink and length of pen: ";
     cin >> color >> price >> color_ink >> length;
+    while(price<0 or length<=0){
+        cout << "price or length can't be less than 0" << endl;
+        cout << "Price: ";
+        cin >> price;
+        cout << "Length: ";
+        cin >> length;
+    }
     pen = {color, price, color_ink, length};
     s.Push(pen);
 }
@@ -142,7 +149,7 @@ void getOut(Stack& s){
             system("pause");
             return;
     }
-    cout << "Which product do you want to have? Enter its properties: ";
+    cout << "Which product do you want to have? Enter its properties(color, price, color of ink, length): ";
     cin >> color >> price >> color_ink >> length;
     while (flag){
         top = s.top->data;
