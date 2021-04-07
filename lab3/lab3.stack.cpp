@@ -27,8 +27,8 @@ struct Stack
     };
     Node *top = NULL;
     int count;
-    bool Push(Pen); // Добавить элемент в стек
-    bool Pop(Pen&); // Удалить элемент из стека
+    bool Push(Pen);
+    bool Pop(Pen&);
     void Info();
 };
 
@@ -84,8 +84,8 @@ void Menu(){
     do{
         system("cls");
         cout << "------------" << endl;
-        cout << "1. Add product in cart" << endl;
-        cout << "2. Get out product from cart" << endl;
+        cout << "1. Add product in the cart" << endl;
+        cout << "2. Pull out the product from the cart" << endl;
         cout << "3. Clear cart" << endl;
         cout << "0. Exit" << endl;
         cout << "------------" << endl;
@@ -110,7 +110,7 @@ void readFile(Stack &stack){
     fstream data;
     data.open("data.txt", ios::in);
     if (!data){
-        cout << "Error open file" << endl;
+        cout << "---> Error open file <---" << endl;
         return;
     }
     else{
@@ -128,7 +128,7 @@ void userPush(Stack& s){
     cout << "Enter color, price, color of ink and length of pen: ";
     cin >> color >> price >> color_ink >> length;
     while(price<0 or length<=0){
-        cout << "price or length can't be less than 0" << endl;
+        cout << "---> Price or length can't be less than 0 <---" << endl;
         cout << "Price: ";
         cin >> price;
         cout << "Length: ";
@@ -139,17 +139,17 @@ void userPush(Stack& s){
 }
 
 void getOut(Stack& s){
-    Stack temp; // буферный стек
-    Pen top; // верхний элемент стека
+    Stack temp;
+    Pen top;
     string color, color_ink;
     double price, length; 
     bool flag = true;
     if (s.count == 0){
-            cout << "No products in cart" << endl;
+            cout << "No products in the cart" << endl;
             system("pause");
             return;
     }
-    cout << "Which product do you want to have? Enter its properties(color, price, color of ink, length): ";
+    cout << "Enter properties of the product(color, price, color of ink, length): ";
     cin >> color >> price >> color_ink >> length;
     while (flag){
         top = s.top->data;
@@ -170,12 +170,12 @@ void getOut(Stack& s){
         temp.Pop(top);
     }
     if (flag) cout << "No product in the cart" << endl;
-    else cout << "The product found" << endl;
+    else cout << "The product was found" << endl;
     system("pause");
 }
 
 void Clear(Pen& pen, Stack &s){
-    while (s.count>0){
+    while (s.count){
         s.Pop(pen);
     }
 }

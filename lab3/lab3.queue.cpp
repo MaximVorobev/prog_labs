@@ -12,10 +12,11 @@ struct Product
 };
 
 void Product::Out(){
-    cout << "Name: " << name << endl;
-    cout << "Quantity: " << quantity << endl;
-    cout << "Price: " << price << endl;
-    cout << "Total cost: " << total_cost << endl;
+    cout << endl << "First item info:" << endl; 
+    cout << "\tName: " << name << endl;
+    cout << "\tQuantity: " << quantity << endl;
+    cout << "\tPrice: " << price << endl;
+    cout << "\tTotal cost: " << total_cost << endl;
 }
 
 struct Queue
@@ -69,6 +70,7 @@ void Queue::Info(){
         cout << "\tQueue size = " << count << endl;
         cout << "\tRest = " << rest << endl;
         cout << "\tMoney = " << money << endl;
+        First->data.Out();
     }
     system("pause");
 }
@@ -128,18 +130,19 @@ void Sale(Queue &q){
     cout << "Enter the number of units of the product you want to purchase: ";
     cin >> count;
     while (count > product.quantity or count<=0){
-        cout << "There is no such quantity of goods in stock, enter a smaller number:";
+        cout << "There is no such quantity of goods in stock: ";
         cin >> count;
     }
     if (count == product.quantity){
         q.money += product.quantity * product.price;
+        q.rest -= count;
         q.Pop(product);
     }
     else{
         q.money += count * product.price;
         q.First->data.quantity -= count; 
         q.rest -= count;
-        q.First->data.total_cost -= count* product.price;
+        q.First->data.total_cost -= count * product.price;
     }
 }
 
