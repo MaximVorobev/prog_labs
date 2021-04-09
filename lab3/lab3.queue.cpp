@@ -81,6 +81,7 @@ void Sale(Queue&);
 
 void Menu(){
     Queue q;
+    Product p;
     int key;
     do{
         system("cls");
@@ -97,7 +98,11 @@ void Menu(){
             case 1: Arriving(q); break;
             case 2: Sale(q); break;
             case 3: q.Info(); break;
-            case 0: break;
+            case 0: {
+                while(q.count){
+                    q.Pop(p);
+                }
+            }break;
             default:  system("cls"); 
                       cout << "Error data, try again..." << endl; 
                       system("pause");
@@ -126,23 +131,37 @@ void Arriving(Queue &q){
 void Sale(Queue &q){
     Product product;
     int count;
+    double price;
     product = q.First->data;
-    cout << "Enter the number of units of the product you want to purchase: ";
-    cin >> count;
-    while (count > product.quantity or count<=0){
-        cout << "There is no such quantity of goods in stock: ";
+    cout << "Enter the number and price of units of the product you want to purchase: ";
+    cin >> count >> price;
+    while (count<=0 || count>q.rest || price<=0 || price<=product.price){
+        cout << "---> Error data count or price <--- " << endl;
+        cout << "Count: ";
         cin >> count;
+        cout << "Price: ";
+        cin >> price;
     }
-    if (count == product.quantity){
-        q.money += product.quantity * product.price;
-        q.rest -= count;
-        q.Pop(product);
-    }
-    else{
-        q.money += count * product.price;
-        q.First->data.quantity -= count; 
-        q.rest -= count;
-        q.First->data.total_cost -= count * product.price;
+    while (count){
+        if (count <= product.quantity){
+            q.money += count * (price - product.price);
+            product.total_cost -= count * product.price;
+            product.quantity -= count;
+            q.rest -= count;
+            count = 0;
+            q.First->data.quantity = product.quantity;
+            q.First->data.total_cost = product.total_cost;        
+        } 
+        else{
+            q.money += product.quantity * (price - product.price);
+            count -= product.quantity;
+            q.rest -= count;
+            product.quantity = 0;
+        }
+        if (product.quantity == 0){
+            q.Pop(product);
+            product = q.First->data;
+        }
     }
 }
 

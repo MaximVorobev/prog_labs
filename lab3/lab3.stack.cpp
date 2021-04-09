@@ -153,7 +153,7 @@ void getOut(Stack& s){
     cin >> color >> price >> color_ink >> length;
     while (flag){
         top = s.top->data;
-        if ((color == top.color) and (price == top.price) and (color_ink == top.color_ink) and (length == top.length)){
+        if ((color == top.color) && (price == top.price) && (color_ink == top.color_ink) && (length == top.length)){
             s.Pop(top);
             flag = 0;
             break;
