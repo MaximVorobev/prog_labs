@@ -200,7 +200,6 @@ void PullOut(Queue &q){
         if ((color == p.color) && (price == p.price) && (length == p.length) && (color_ink == p.color_ink)){
             q.Pop(data, ssize);
             cout << "The product was found" << endl;
-            data = NULL;
             delete[] data;
             system("pause");
             return;
@@ -211,7 +210,6 @@ void PullOut(Queue &q){
             GetSeria(data, ssize, p);
             q.Push(data, ssize);
         }
-        data = NULL;
     }
     cout << "No product in the queue" << endl;
     delete[] data;
@@ -227,8 +225,8 @@ void Clear(Queue& q){
         data = q.First->data;
         ssize = q.First->n;
         GetDeSeria(data, ssize, p);
-        ShowProduct(p);
         q.Pop(data, ssize);
+        ShowProduct(p);
         data = NULL;
     }
     delete[] data;
