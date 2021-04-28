@@ -206,7 +206,9 @@ void PullOut(Queue &q){
             return;
         }
         else {
+            GetDeSeria(data, ssize, p);
             q.Pop(data, ssize);
+            GetSeria(data, ssize, p);
             q.Push(data, ssize);
         }
         data = NULL;
