@@ -7,7 +7,7 @@ struct Pen{
     string color;
     double price;
     double length;
-    string color_ink;
+    int quantity;
 };
 
 struct Queue{
@@ -82,29 +82,25 @@ void ShowProduct(Pen p);
 
 void GetSeria(char*& data, int& n, Pen a){
     size_t s1 = a.color.size();
-    size_t s2 = a.color_ink.size();
     int n0 = sizeof(size_t);
     int n1 = s1;
     int n2 = sizeof(double);
     int n3 = n2;
-    int n4 = sizeof(size_t);
-    int n5 = s2;
-    n = n0+n1+n2+n3+n4+n5;
+    int n4 = sizeof(int);
+    n = n0+n1+n2+n3+n4;
     data = new char[n];
 
     char* d0 = reinterpret_cast<char*>(&s1);
     char* d1 = const_cast<char*>(a.color.c_str());
     char* d2 = reinterpret_cast<char*>(&a.price);
     char* d3 = reinterpret_cast<char*>(&a.length);
-    char* d4 = reinterpret_cast<char*>(&s2);
-    char* d5 = const_cast<char*>(a.color_ink.c_str());
+    char* d4 = reinterpret_cast<char*>(&a.quantity);
 
     for(int i=0; i<n0; i++) data[i] = d0[i];
     for(int i=0; i<n1; i++) data[i+n0] = d1[i];
     for(int i=0; i<n2; i++) data[i+n0+n1] = d2[i];
     for(int i=0; i<n3; i++) data[i+n0+n1+n2] = d3[i];
     for(int i=0; i<n4; i++) data[i+n0+n1+n2+n3] = d4[i];
-    for(int i=0; i<n5; i++) data[i+n0+n1+n2+n3+n4] = d5[i];
 }
 
 void GetDeSeria(char* data, int n, Pen& a){
@@ -112,17 +108,15 @@ void GetDeSeria(char* data, int n, Pen& a){
     n0 = sizeof(size_t);
     n2 = sizeof(double);
     n3 = n2;
-    n4 = sizeof(size_t);
+    n4 = sizeof(int);
     size_t p = *reinterpret_cast<size_t*>(data);
     n1 = p;
-    n5 = p;
     string ss1(data+n0, p);
-    string ss2(data+n0+n1+n2+n3+n4, p);
 
     a.color = ss1;
     a.price = *reinterpret_cast<double*>(data+n0+n1);
     a.length = *reinterpret_cast<double*>(data+n0+n1+n2);
-    a.color_ink = ss2;
+    a.quantity = *reinterpret_cast<int*>(data+n0+n1+n2+n3);
 }
 
 void Menu(){
@@ -191,13 +185,13 @@ bool ReadBinaryFile(){
 
 void AddProduct(Queue &q){
     Pen p;
-    string color, color_ink;
+    string color;
     double price, length;
     char* data;
-    int ssize;
-    cout << "Enter product specifications(color, price, length): " << endl;
-    cin >> color >> price >> length >> color_ink;
-    while(length<=0 or price<0){
+    int ssize, quantity;
+    cout << "Enter product specifications(color, price, length, quantity): " << endl;
+    cin >> color >> price >> length >> quantity;
+    while(length<=0 || price<0){
         cout << "Length and price can't be less than 0" << endl;
         cout << "Price: ";
         cin >> price;
@@ -205,17 +199,18 @@ void AddProduct(Queue &q){
         cin >> length;
     }
 
-    p = {color, price, length, color_ink};
+    p = {color, price, length, quantity};
     GetSeria(data, ssize, p);
     q.Push(data, ssize);
+    data = NULL;
     delete[] data;
 }
 
 void PullOut(Queue &q){
     Pen p;
-    int ssize, count = q.count;
+    int ssize, quantity, count = q.count;
     char* data;
-    string color, color_ink;
+    string color;
     double price, length;
     system("cls");
     if (q.count == 0){
@@ -223,8 +218,8 @@ void PullOut(Queue &q){
             system("pause");
             return;
     }
-    cout << "Enter the number and price of units of the product you want to purchase: ";
-    cin >> color >> price >> length >> color_ink;
+    cout << "Enter product specifications(color, price, length, quantity): ";
+    cin >> color >> price >> length >> quantity;
     while (length<=0 || price<0){
         cout << "---> Error data length or price <--- " << endl;
         cout << "Price: ";
@@ -237,9 +232,10 @@ void PullOut(Queue &q){
         data = q.First->data;
         ssize = q.First->n;
         GetDeSeria(data, ssize, p);
-        if ((color == p.color) && (price == p.price) && (length == p.length) && (color_ink == p.color_ink)){
+        if ((color == p.color) && (price == p.price) && (length == p.length) && (quantity == p.quantity)){
             q.Pop(data, ssize);
             cout << "The product was found" << endl;
+            data = NULL;
             delete[] data;
             system("pause");
             return;
@@ -252,6 +248,7 @@ void PullOut(Queue &q){
         }
     }
     cout << "No product in the queue" << endl;
+    data = NULL;
     delete[] data;
     system("pause");
 }
@@ -278,7 +275,7 @@ void ShowProduct(Pen p){
     cout << "\t Color: " << p.color
          << "\t Price: " << p.price
          << "\t Length: " << p.length 
-         << "\t Color ink: " << p.color_ink << endl;
+         << "\t Quantity included: " << p.quantity << endl;
 }
 
 int main(){   
