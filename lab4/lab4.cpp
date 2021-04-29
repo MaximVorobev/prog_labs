@@ -77,6 +77,7 @@ void FeedFromBinaryFile(Queue&);
 void AddProduct(Queue&);
 void PullOut(Queue&);
 void Clear(Queue&);
+void ClearExit(Queue&);
 void GetSeria(char*&, int&, Pen);
 void GetDeSeria(char*, int, Pen&);
 void ShowProduct(Pen);
@@ -140,7 +141,7 @@ void Menu(){
             case 1: AddProduct(q); break;
             case 2: PullOut(q); break;
             case 3: Clear(q); break;
-            case 0: break;
+            case 0: ClearExit(q); break;
             default:  system("cls"); 
                       cout << "Error data, try again..." << endl; 
                       system("pause");
@@ -295,6 +296,20 @@ void Clear(Queue& q){
     }
     delete[] data;
     system("pause");
+}
+
+void ClearExit(Queue& q){
+    Pen p;
+    char* data;
+    int ssize;
+    while(q.count){
+        data = q.First->data;
+        ssize = q.First->n;
+        GetDeSeria(data, ssize, p);
+        q.Pop(data, ssize);
+        data = NULL;
+    }
+    delete[] data;
 }
 
 void ShowProduct(Pen p){
