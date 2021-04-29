@@ -3,6 +3,7 @@
 #include <fstream>
 using namespace std;
 
+
 struct Pen{   
     string color;
     double price;
@@ -64,8 +65,7 @@ bool Queue::Pop(char*& data, int& n){
 void Queue::Info(){
     if (!First) cout << "---> Queue is empty" << endl;
     else{
-        cout << "Queue info: " << endl;
-        cout << "\tQueue size = " << count << endl;
+        cout << "Queue size = " << count << endl;
     }
 }
 
@@ -105,7 +105,7 @@ void GetSeria(char*& data, int& n, Pen a){
 }
 
 void GetDeSeria(char* data, int n, Pen& a){
-    int n0, n1, n2, n3, n4, n5;
+    int n0, n1, n2, n3, n4;
     n0 = sizeof(size_t);
     n2 = sizeof(double);
     n3 = n2;
@@ -168,7 +168,7 @@ bool ReadBinaryFile(Queue& q, int m){
         cout << "---> Error, there are no input binary file" << endl;
         return false;
     }
-    int i=1, n;
+    int n;
     Pen p;
     while(!f_in.eof()){
         for(int i=0; i<m; i++){
@@ -192,12 +192,15 @@ void FeedFromBinaryFile(Queue& q){
     };
     char* data;
     int ssize, m=2;
+    system("cls");
     ClearBinaryFile();
     for(int i=0; i<m; i++){
         GetSeria(data, ssize, p[i]);
+        ShowProduct(p[i]);
         WriteBinaryFile(data, ssize);
     }
     ReadBinaryFile(q, m);
+    system("pause");
 }
 
 void AddProduct(Queue &q){
@@ -206,14 +209,17 @@ void AddProduct(Queue &q){
     double price, length;
     char* data;
     int ssize, quantity;
+    system("cls");
     cout << "Enter product specifications(color, price, length, quantity): " << endl;
     cin >> color >> price >> length >> quantity;
-    while(length<=0 || price<0){
-        cout << "Length and price can't be less than 0" << endl;
+    while (length<=0 || price<0 || quantity<0){
+        cout << "---> Error data length, price or quantity <--- " << endl;
         cout << "Price: ";
         cin >> price;
         cout << "Length: ";
         cin >> length;
+        cout << "Quantity: ";
+        cin >> quantity;
     }
 
     p = {color, price, length, quantity};
@@ -237,12 +243,14 @@ void PullOut(Queue &q){
     }
     cout << "Enter product specifications(color, price, length, quantity): ";
     cin >> color >> price >> length >> quantity;
-    while (length<=0 || price<0){
-        cout << "---> Error data length or price <--- " << endl;
+    while (length<=0 || price<0 || quantity<0){
+        cout << "---> Error data length, price or quantity <--- " << endl;
         cout << "Price: ";
         cin >> price;
         cout << "Length: ";
         cin >> length;
+        cout << "Quantity: ";
+        cin >> quantity;
     }
 
     for(int i=0; i<count; i++){
