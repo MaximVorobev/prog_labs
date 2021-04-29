@@ -71,14 +71,15 @@ void Queue::Info(){
 
 void Menu();
 void ClearBinaryFile();
-void WriteBinaryFile(char* data, int n);
-bool ReadBinaryFile();
+void WriteBinaryFile(char*, int);
+bool ReadBinaryFile(Queue&, int);
+void FeedFromBinaryFile(Queue&);
 void AddProduct(Queue&);
 void PullOut(Queue&);
 void Clear(Queue&);
-void GetSeria(char*& data, int& n, Pen a);
-void GetDeSeria(char* data, int n, Pen& a);
-void ShowProduct(Pen p);
+void GetSeria(char*&, int&, Pen);
+void GetDeSeria(char*, int, Pen&);
+void ShowProduct(Pen);
 
 void GetSeria(char*& data, int& n, Pen a){
     size_t s1 = a.color.size();
@@ -122,11 +123,12 @@ void GetDeSeria(char* data, int n, Pen& a){
 void Menu(){
     Queue q;
     int key;
+    FeedFromBinaryFile(q);
     do{
         system("cls");
         cout << "------------" << endl;
-        cout << "1. Goods arriving" << endl;
-        cout << "2. Sale of goods" << endl;
+        cout << "1. Add product" << endl;
+        cout << "2. Pull out product" << endl;
         cout << "3. Clear" << endl;
         cout << "0. Exit" << endl;
         cout << "------------" << endl;
@@ -154,13 +156,13 @@ void ClearBinaryFile(){
 
 void WriteBinaryFile(char* data, int n){
     fstream f_out;
-    f_out.open("out.dat", ios::out | ios::binary);
+    f_out.open("out.dat", ios::app | ios::binary);
     f_out.write((char*)&n, sizeof(int));
     f_out.write(data, n);
     f_out.close();
 }
 
-bool ReadBinaryFile(){
+bool ReadBinaryFile(Queue& q, int m){
     fstream f_in("out.dat", ios::in | ios::binary);
     if(!f_in){
         cout << "---> Error, there are no input binary file" << endl;
@@ -169,19 +171,34 @@ bool ReadBinaryFile(){
     int i=1, n;
     Pen p;
     while(!f_in.eof()){
-        if(f_in.read((char*)&n, sizeof(int))){
-            char* data = new char[n];
-            f_in.read(data, n);
-            i++;
-            GetDeSeria(data, n, p);
-            ShowProduct(p);
-            delete[] data;
+        for(int i=0; i<m; i++){
+            if(f_in.read((char*)&n, sizeof(int))){
+                char* data = new char[n];
+                f_in.read(data, n);
+                i++;
+                q.Push(data, n);
+                delete[] data;
+            }
         }
     }
     f_in.close();
     return true;
 }
 
+void FeedFromBinaryFile(Queue& q){
+    Pen p[] = {
+        {"blue", 12.7, 7, 2},
+        {"white", 7, 4.8, 5}
+    };
+    char* data;
+    int ssize, m=2;
+    ClearBinaryFile();
+    for(int i=0; i<m; i++){
+        GetSeria(data, ssize, p[i]);
+        WriteBinaryFile(data, ssize);
+    }
+    ReadBinaryFile(q, m);
+}
 
 void AddProduct(Queue &q){
     Pen p;
@@ -208,13 +225,13 @@ void AddProduct(Queue &q){
 
 void PullOut(Queue &q){
     Pen p;
-    int ssize, quantity, count = q.count;
-    char* data;
     string color;
     double price, length;
+    int ssize, quantity, count = q.count;
+    char* data;
     system("cls");
     if (q.count == 0){
-            cout << "No products in the cart" << endl;
+            cout << "No products in the queue" << endl;
             system("pause");
             return;
     }
@@ -256,14 +273,16 @@ void PullOut(Queue &q){
 void Clear(Queue& q){
     Pen p;
     char* data;
-    int ssize;
+    int ssize, i = 1;
     system("cls");
     while(q.count){
         data = q.First->data;
         ssize = q.First->n;
         GetDeSeria(data, ssize, p);
         q.Pop(data, ssize);
+        cout << i << ". ";
         ShowProduct(p);
+        i++;
         data = NULL;
     }
     delete[] data;
@@ -271,14 +290,13 @@ void Clear(Queue& q){
 }
 
 void ShowProduct(Pen p){
-    cout << "Pen:";
-    cout << "\t Color: " << p.color
-         << "\t Price: " << p.price
-         << "\t Length: " << p.length 
-         << "\t Quantity included: " << p.quantity << endl;
+    cout << "\tColor: " << p.color
+         << "\tPrice: " << p.price
+         << "\tLength: " << p.length 
+         << "\tQuantity included: " << p.quantity << endl;
 }
 
-int main(){   
+int main(){ 
     Menu();
     return 0;
 }
