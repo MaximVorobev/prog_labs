@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 using namespace std;
 
 struct Pen{   
@@ -22,10 +23,10 @@ bool Queue::Push(char* data, int n){
     if (!First){
         First = new Node;
         First->next = NULL;
-        First->n=n;
-        First->data=new char[n];
+        First->n = n;
+        First->data = new char[n];
         for(int i=0; i<n; i++){
-            First->data[i]=data[i];
+            First->data[i] = data[i];
         }
         count = 1;
     }
@@ -34,12 +35,12 @@ bool Queue::Push(char* data, int n){
         temp = First;
         while(temp->next!=NULL)
             temp=temp->next;
-        temp->next=new Node;
-        temp->next->data=new char[n];
-        temp->next->next=NULL;
-        temp->next->n=n;
+        temp->next = new Node;
+        temp->next->data = new char[n];
+        temp->next->next = NULL;
+        temp->next->n = n;
         for(int i=0; i<n; i++){
-            temp->next->data[i]=data[i];
+            temp->next->data[i] = data[i];
         }
         count++;
     }
@@ -69,6 +70,9 @@ void Queue::Info(){
 }
 
 void Menu();
+void ClearBinaryFile();
+void WriteBinaryFile(char* data, int n);
+bool ReadBinaryFile();
 void AddProduct(Queue&);
 void PullOut(Queue&);
 void Clear(Queue&);
@@ -77,45 +81,44 @@ void GetDeSeria(char* data, int n, Pen& a);
 void ShowProduct(Pen p);
 
 void GetSeria(char*& data, int& n, Pen a){
-    size_t s1= a.color.size();
-    size_t s2= a.color_ink.size();
-    int n0=sizeof(size_t);
-    int n1=s1;
-    int n2=sizeof(double);
-    int n3=n2;
-    int n4=sizeof(size_t);
-    int n5=s2;
-
+    size_t s1 = a.color.size();
+    size_t s2 = a.color_ink.size();
+    int n0 = sizeof(size_t);
+    int n1 = s1;
+    int n2 = sizeof(double);
+    int n3 = n2;
+    int n4 = sizeof(size_t);
+    int n5 = s2;
     n = n0+n1+n2+n3+n4+n5;
-    data=new char[n];
+    data = new char[n];
 
-    char* d0=reinterpret_cast<char*>(&s1);
-    char* d1=const_cast<char*>(a.color.c_str());
-    char* d2=reinterpret_cast<char*>(&a.price);
-    char* d3=reinterpret_cast<char*>(&a.length);
-    char* d4=reinterpret_cast<char*>(&s2);
-    char* d5=const_cast<char*>(a.color_ink.c_str());
+    char* d0 = reinterpret_cast<char*>(&s1);
+    char* d1 = const_cast<char*>(a.color.c_str());
+    char* d2 = reinterpret_cast<char*>(&a.price);
+    char* d3 = reinterpret_cast<char*>(&a.length);
+    char* d4 = reinterpret_cast<char*>(&s2);
+    char* d5 = const_cast<char*>(a.color_ink.c_str());
 
-    for(int i=0; i<n0; i++) data[i]=d0[i];
-    for(int i=0; i<n1; i++) data[i+n0]=d1[i];
-    for(int i=0; i<n2; i++) data[i+n0+n1]=d2[i];
-    for(int i=0; i<n3; i++) data[i+n0+n1+n2]=d3[i];
-    for(int i=0; i<n4; i++) data[i+n0+n1+n2+n3]=d4[i];
-    for(int i=0; i<n5; i++) data[i+n0+n1+n2+n3+n4]=d5[i];
+    for(int i=0; i<n0; i++) data[i] = d0[i];
+    for(int i=0; i<n1; i++) data[i+n0] = d1[i];
+    for(int i=0; i<n2; i++) data[i+n0+n1] = d2[i];
+    for(int i=0; i<n3; i++) data[i+n0+n1+n2] = d3[i];
+    for(int i=0; i<n4; i++) data[i+n0+n1+n2+n3] = d4[i];
+    for(int i=0; i<n5; i++) data[i+n0+n1+n2+n3+n4] = d5[i];
 }
 
 void GetDeSeria(char* data, int n, Pen& a){
     int n0, n1, n2, n3, n4, n5;
-    n0=sizeof(size_t);
-    n2=sizeof(double);
-    n3=n2;
-    n4=sizeof(size_t);
+    n0 = sizeof(size_t);
+    n2 = sizeof(double);
+    n3 = n2;
+    n4 = sizeof(size_t);
     size_t p = *reinterpret_cast<size_t*>(data);
-    n1=p;
-    n5=p;
-
+    n1 = p;
+    n5 = p;
     string ss1(data+n0, p);
     string ss2(data+n0+n1+n2+n3+n4, p);
+
     a.color = ss1;
     a.price = *reinterpret_cast<double*>(data+n0+n1);
     a.length = *reinterpret_cast<double*>(data+n0+n1+n2);
@@ -148,6 +151,43 @@ void Menu(){
         }
     }while(key);
 }
+
+void ClearBinaryFile(){
+    fstream f_out;
+    f_out.open("out.dat", ios::out | ios::binary);
+    f_out.close();
+}
+
+void WriteBinaryFile(char* data, int n){
+    fstream f_out;
+    f_out.open("out.dat", ios::out | ios::binary);
+    f_out.write((char*)&n, sizeof(int));
+    f_out.write(data, n);
+    f_out.close();
+}
+
+bool ReadBinaryFile(){
+    fstream f_in("out.dat", ios::in | ios::binary);
+    if(!f_in){
+        cout << "---> Error, there are no input binary file" << endl;
+        return false;
+    }
+    int i=1, n;
+    Pen p;
+    while(!f_in.eof()){
+        if(f_in.read((char*)&n, sizeof(int))){
+            char* data = new char[n];
+            f_in.read(data, n);
+            i++;
+            GetDeSeria(data, n, p);
+            ShowProduct(p);
+            delete[] data;
+        }
+    }
+    f_in.close();
+    return true;
+}
+
 
 void AddProduct(Queue &q){
     Pen p;
@@ -241,8 +281,7 @@ void ShowProduct(Pen p){
          << "\t Color ink: " << p.color_ink << endl;
 }
 
-int main()
-{   
+int main(){   
     Menu();
     return 0;
 }
