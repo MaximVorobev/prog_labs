@@ -52,6 +52,7 @@ bool Queue::Pop(char*& data, int& n){
     if (!First) return false;
     Node* temp = First->next;
     n=First->n;
+    data = new char[n];
     for(int i=0; i<n; i++){
         data[i] = First->data[i];
     }
@@ -72,7 +73,7 @@ void Queue::Info(){
 void Menu();
 void ClearBinaryFile();
 void WriteBinaryFile(char*, int);
-bool ReadBinaryFile(Queue&, int);
+bool ReadBinaryFile(Queue&);
 void InputBinaryFile();
 void AddProduct(Queue&);
 void PullOut(Queue&);
@@ -124,7 +125,7 @@ void GetDeSeria(char* data, int n, Pen& a){
 void Menu(){
     Queue q;
     int key;
-    ReadBinaryFile(q, 2);
+    ReadBinaryFile(q);
     do{
         system("cls");
         cout << "------------" << endl;
@@ -163,7 +164,7 @@ void WriteBinaryFile(char* data, int n){
     f_out.close();
 }
 
-bool ReadBinaryFile(Queue& q, int m){
+bool ReadBinaryFile(Queue& q){
     system("cls");
     fstream f_in("out.dat", ios::in | ios::binary);
     if(!f_in){
@@ -173,16 +174,14 @@ bool ReadBinaryFile(Queue& q, int m){
     int n;
     Pen p;
     while(!f_in.eof()){
-        for(int i=0; i<m; i++){
-            if(f_in.read((char*)&n, sizeof(int))){
-                char* data = new char[n];
-                f_in.read(data, n);
-                i++;
-                q.Push(data, n);
-                GetDeSeria(data, n, p);
-                ShowProduct(p);
-                delete[] data;
-            }
+        if(f_in.read((char*)&n, sizeof(int))){
+            char* data = new char[n];
+            f_in.read(data, n);
+            q.Push(data, n);
+            GetDeSeria(data, n, p);
+            ShowProduct(p);
+            delete[] data;
+            data = NULL;
         }
     }
     f_in.close();
@@ -203,32 +202,29 @@ void InputBinaryFile(){
         WriteBinaryFile(data, ssize);
     }
     delete[] data;
+    data = NULL;
 }
 
 void AddProduct(Queue &q){
     Pen p;
-    string color;
-    double price, length;
     char* data;
-    int ssize, quantity;
+    int ssize;
     system("cls");
     cout << "Enter product specifications(color, price, length, quantity): " << endl;
-    cin >> color >> price >> length >> quantity;
-    while (length<=0 || price<0 || quantity<0){
+    cin >> p.color >> p.price >> p.length >> p.quantity;
+    while (p.length<=0 || p.price<0 || p.quantity<0){
         cout << "---> Error data length, price or quantity <--- " << endl;
         cout << "Price: ";
-        cin >> price;
+        cin >> p.price;
         cout << "Length: ";
-        cin >> length;
+        cin >> p.length;
         cout << "Quantity: ";
-        cin >> quantity;
+        cin >> p.quantity;
     }
-
-    p = {color, price, length, quantity};
     GetSeria(data, ssize, p);
     q.Push(data, ssize);
-    data = NULL;
     delete[] data;
+    data = NULL;
 }
 
 void PullOut(Queue &q){
@@ -256,24 +252,19 @@ void PullOut(Queue &q){
 
     for(int i=0; i<count; i++){
         char* data;
-        data = q.First->data;
-        ssize = q.First->n;
+        q.Pop(data, ssize);
         GetDeSeria(data, ssize, p);
         if ((color == p.color) && (price == p.price) && (length == p.length) && (quantity == p.quantity)){
-            q.Pop(data, ssize);
             cout << "The product was found" << endl;
-            data = NULL;
             delete[] data;
+            data = NULL;
             system("pause");
             return;
         }
         else {
-            GetDeSeria(data, ssize, p);
-            q.Pop(data, ssize);
-            GetSeria(data, ssize, p);
             q.Push(data, ssize);
-            data = NULL;
             delete[] data;
+            data = NULL;
         }
     }
     cout << "No product in the queue" << endl;
@@ -281,38 +272,39 @@ void PullOut(Queue &q){
 }
 
 void Clear(Queue& q){
-    Pen p;
-    
+    if (q.count == 0){
+        return;
+    }
+    Pen p;    
     int ssize, i = 1;
     system("cls");
     while(q.count){
-        char* data;
-        data = q.First->data;
+        char* data = new char[q.First->n];
         ssize = q.First->n;
-        GetDeSeria(data, ssize, p);
         q.Pop(data, ssize);
+        GetDeSeria(data, ssize, p);
         cout << i << ". ";
         ShowProduct(p);
         i++;
-        data = NULL;
         delete[] data;
+        data = NULL;
     }
     system("pause");
 }
 
 void ClearExit(Queue& q){
     Pen p;
-    char* data;
+    if (q.count == 0){
+        return;
+    }
     int ssize;
     while(q.count){
-        data = q.First->data;
+        char* data = new char[q.First->n];
         ssize = q.First->n;
-        GetDeSeria(data, ssize, p);
         q.Pop(data, ssize);
+        delete[] data;
         data = NULL;
     }
-    data = NULL;
-    delete[] data;
 }
 
 void ShowProduct(Pen p){
