@@ -73,7 +73,7 @@ void Menu();
 void ClearBinaryFile();
 void WriteBinaryFile(char*, int);
 bool ReadBinaryFile(Queue&, int);
-void FeedFromBinaryFile(Queue&);
+void InputBinaryFile();
 void AddProduct(Queue&);
 void PullOut(Queue&);
 void Clear(Queue&);
@@ -124,7 +124,7 @@ void GetDeSeria(char* data, int n, Pen& a){
 void Menu(){
     Queue q;
     int key;
-    FeedFromBinaryFile(q);
+    ReadBinaryFile(q, 2);
     do{
         system("cls");
         cout << "------------" << endl;
@@ -164,6 +164,7 @@ void WriteBinaryFile(char* data, int n){
 }
 
 bool ReadBinaryFile(Queue& q, int m){
+    system("cls");
     fstream f_in("out.dat", ios::in | ios::binary);
     if(!f_in){
         cout << "---> Error, there are no input binary file" << endl;
@@ -178,30 +179,29 @@ bool ReadBinaryFile(Queue& q, int m){
                 f_in.read(data, n);
                 i++;
                 q.Push(data, n);
+                GetDeSeria(data, n, p);
+                ShowProduct(p);
                 delete[] data;
             }
         }
     }
     f_in.close();
+    system("pause");
     return true;
 }
 
-void FeedFromBinaryFile(Queue& q){
+void InputBinaryFile(){
     Pen p[] = {
         {"blue", 12.7, 7, 2},
         {"white", 7, 4.8, 5}
     };
     char* data;
     int ssize, m=2;
-    system("cls");
     ClearBinaryFile();
     for(int i=0; i<m; i++){
         GetSeria(data, ssize, p[i]);
-        ShowProduct(p[i]);
         WriteBinaryFile(data, ssize);
     }
-    ReadBinaryFile(q, m);
-    system("pause");
 }
 
 void AddProduct(Queue &q){
@@ -322,6 +322,7 @@ void ShowProduct(Pen p){
 }
 
 int main(){ 
+    InputBinaryFile();
     Menu();
     return 0;
 }
