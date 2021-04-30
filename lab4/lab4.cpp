@@ -202,6 +202,7 @@ void InputBinaryFile(){
         GetSeria(data, ssize, p[i]);
         WriteBinaryFile(data, ssize);
     }
+    delete[] data;
 }
 
 void AddProduct(Queue &q){
@@ -235,7 +236,6 @@ void PullOut(Queue &q){
     string color;
     double price, length;
     int ssize, quantity, count = q.count;
-    char* data;
     system("cls");
     if (q.count == 0){
             cout << "No products in the queue" << endl;
@@ -255,6 +255,7 @@ void PullOut(Queue &q){
     }
 
     for(int i=0; i<count; i++){
+        char* data;
         data = q.First->data;
         ssize = q.First->n;
         GetDeSeria(data, ssize, p);
@@ -271,20 +272,21 @@ void PullOut(Queue &q){
             q.Pop(data, ssize);
             GetSeria(data, ssize, p);
             q.Push(data, ssize);
+            data = NULL;
+            delete[] data;
         }
     }
     cout << "No product in the queue" << endl;
-    data = NULL;
-    delete[] data;
     system("pause");
 }
 
 void Clear(Queue& q){
     Pen p;
-    char* data;
+    
     int ssize, i = 1;
     system("cls");
     while(q.count){
+        char* data;
         data = q.First->data;
         ssize = q.First->n;
         GetDeSeria(data, ssize, p);
@@ -293,9 +295,8 @@ void Clear(Queue& q){
         ShowProduct(p);
         i++;
         data = NULL;
+        delete[] data;
     }
-    data = NULL;
-    delete[] data;
     system("pause");
 }
 
