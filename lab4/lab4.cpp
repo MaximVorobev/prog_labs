@@ -294,6 +294,7 @@ void Clear(Queue& q){
         i++;
         data = NULL;
     }
+    data = NULL;
     delete[] data;
     system("pause");
 }
@@ -309,6 +310,7 @@ void ClearExit(Queue& q){
         q.Pop(data, ssize);
         data = NULL;
     }
+    data = NULL;
     delete[] data;
 }
 
