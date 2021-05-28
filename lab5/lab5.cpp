@@ -293,8 +293,7 @@ void DelEl(DLList& List){
         cout << "pos = ";
         cin >> pos;
     }
-    
-    if (pos!=1){
+    if (List.MoveFirst() && pos!=1){
         while (i<pos-1){
             List.MoveNext();
             i++;
