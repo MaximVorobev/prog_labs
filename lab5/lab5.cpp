@@ -386,6 +386,7 @@ void Output(DLList List){
 
 void Menu(){
     DLList List;
+    Watch w;
     readFile(List);
     int key;
     do{
@@ -398,7 +399,7 @@ void Menu(){
         cout << "5. Output in file" << endl;
         cout << "0. Exit" << endl;
         cout << "------------" << endl;
-        List.Info();
+        List.Out(w);
         cout << "Enter: ";
         cin >> key;
 
