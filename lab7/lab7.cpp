@@ -4,14 +4,17 @@
 using namespace std;
 
 int getN();
-void feedMatr(int**&, int);
-void feedArr(int*&, int);
-void Dijkstra(int**, int*&, int, int, int);
-int findWay(int**, int*, int, int*&);
-void feedFile(int**, int*, int, int*, int);
+int getCount();
+void feedMatr();
+void feedArr();
+void Dijkstra(int, int);
+int findWay(int, int, int*&);
+void feedFile(int*, int);
 void DeleteMatr(int**&, int);
 void DeleteArr(int*&);
-
+int N; /* Число вершин */
+int** AMatrix; /* Матрица смежности */
+int* MarkNode; /* Массив меток вершин */
 
 int getN(){
     int num;
@@ -23,7 +26,28 @@ int getN(){
     return num;
 }
 
-void feedMatr(int**& AMatrix, int N){
+int getCount(){
+    string line;
+    fstream f_in("input.txt", ios::in);
+    if(!f_in){
+        cout << "---> Error, there are no input file" << endl;
+        exit(0);
+    }
+    getline(f_in, line);
+    for(int i=0; i<line.length(); i++){
+        if (line[i] == ' '){
+            line.erase(i, 1);
+            i--;
+        }
+    }
+    if (line.length() < 2){
+        cout << "Error count of node, check input file" << endl;
+        exit(0);
+    }
+    return line.length();
+}
+
+void feedMatr(){
     int temp;
     AMatrix = new int* [N];
     for(int i=0; i<N; i++){
@@ -32,25 +56,29 @@ void feedMatr(int**& AMatrix, int N){
     fstream f_in("input.txt", ios::in);
     if(!f_in){
         cout << "---> Error, there are no input file" << endl;
-        return;
+        exit(0);
     }
     for(int i=0; i<N; i++){
         for (int j=0; j<N; j++){
-            if(f_in>>temp){
+            if(f_in>>temp && temp > -1){
                 AMatrix[i][j] = temp;
+            }
+            else {
+                cout << "Error data in input file" << endl;
+                exit(0);
             }
         }
     }
 }
 
-void feedArr(int*& MarkNode, int N){
+void feedArr(){
     MarkNode = new int [N];
     for(int i=0; i<N; i++){
         MarkNode[i] = INT_MAX;
     }
 }
 
-void Dijkstra(int** AMatrix, int*& MarkNode, int N, int begin, int end){
+void Dijkstra(int begin, int end){
     priority_queue<pair <int, int>> Q;
     begin--; end--;
     MarkNode[begin] = 0;
@@ -70,7 +98,7 @@ void Dijkstra(int** AMatrix, int*& MarkNode, int N, int begin, int end){
     }
 }
 
-int findWay(int** AMatrix, int* MarkNode, int N, int begin, int end, int*& arrNode){
+int findWay(int begin, int end, int*& arrNode){
     queue<int> Q;
     arrNode = new int [N];
     int temp = end-1, j = 0;
@@ -96,7 +124,7 @@ int findWay(int** AMatrix, int* MarkNode, int N, int begin, int end, int*& arrNo
     return j;
 }
 
-void feedFile(int** AMatrix, int* MarkNode, int N, int* arrNode, int len_way){
+void feedFile(int* arrNode, int len_way){
     fstream f_out("output.txt", ios::out);
     if(!f_out){
         cout << "---> Error, there are no input file" << endl;
@@ -142,16 +170,13 @@ void DeleteArr(int*& Arr){
     Arr = NULL;
 }
 
+
 int main(){
     int begin, end, len_way;
-    int N; /* Число вершин */
-    cout << "Enter the number of nodes: ";
-    N = getN();
-    int** AMatrix; /* Матрица смежности */
-    int* MarkNode; /* Массив меток вершин */
+    N = getCount(); 
     int* arrWay;
-    feedMatr(AMatrix, N);
-    feedArr(MarkNode, N);
+    feedMatr();
+    feedArr();
     cout << "Enter the starting vertex: ";
     begin = getN();
     cout << "Enter the end vertex: ";
@@ -160,10 +185,9 @@ int main(){
         cout << "Error end == begin" << endl;
         end = getN();
     }
-
-    Dijkstra(AMatrix, MarkNode, N, begin, end);
-    len_way = findWay(AMatrix, MarkNode, N, begin, end, arrWay);
-    feedFile(AMatrix, MarkNode, N, arrWay, len_way);
+    Dijkstra(begin, end);
+    len_way = findWay(begin, end, arrWay);
+    feedFile(arrWay, len_way);
 
     DeleteMatr(AMatrix, N);
     DeleteArr(MarkNode);
