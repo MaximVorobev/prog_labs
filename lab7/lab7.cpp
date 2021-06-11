@@ -12,6 +12,7 @@ int findWay(int, int, int*&);
 void feedFile(int*, int);
 void DeleteMatr(int**&, int);
 void DeleteArr(int*&);
+void clearExit();
 int N; /* Число вершин */
 int** AMatrix; /* Матрица смежности */
 int* MarkNode; /* Массив меток вершин */
@@ -56,7 +57,7 @@ void feedMatr(){
     fstream f_in("input.txt", ios::in);
     if(!f_in){
         cout << "---> Error, there are no input file" << endl;
-        exit(0);
+        clearExit();
     }
     for(int i=0; i<N; i++){
         for (int j=0; j<N; j++){
@@ -65,7 +66,7 @@ void feedMatr(){
             }
             else {
                 cout << "Error data in input file" << endl;
-                exit(0);
+                clearExit();
             }
         }
     }
@@ -95,6 +96,10 @@ void Dijkstra(int begin, int end){
                 Q.push(make_pair(-MarkNode[i], i));
             }
         }
+    }
+    if (MarkNode[end] == INT_MAX){
+        cout << "There is no path to the vertex" << endl;
+        clearExit();
     }
 }
 
@@ -146,6 +151,10 @@ void feedFile(int* arrNode, int len_way){
 
     f_out << "\nMarks of nodes:\n";
     for(int i=0; i<N; i++){
+        if (MarkNode[i] == INT_MAX){
+            f_out << "\t" << i+1 << ". " << "Infinity" << endl;
+            continue;
+        }
         f_out << "\t" << i+1 << ". " << MarkNode[i] << endl;
     }
     f_out << "\n";
@@ -168,6 +177,12 @@ void DeleteMatr(int**& AMatrix, int N){
 void DeleteArr(int*& Arr){
     delete[] Arr;
     Arr = NULL;
+}
+
+void clearExit(){
+    DeleteMatr(AMatrix, N);
+    DeleteArr(MarkNode);
+    exit(0);
 }
 
 
