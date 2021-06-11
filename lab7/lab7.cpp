@@ -29,13 +29,16 @@ void feedMatr(int**& AMatrix, int N){
     for(int i=0; i<N; i++){
         AMatrix[i] = new int [N];
     }
+    fstream f_in("input.txt", ios::in);
+    if(!f_in){
+        cout << "---> Error, there are no input file" << endl;
+        return;
+    }
     for(int i=0; i<N; i++){
-        AMatrix[i][i] = 0;
-        for (int j=i+1; j<N; j++){
-            cout << "Enter distance between " << i+1 << " - " << j+1 << ": ";
-            cin >> temp;
-            AMatrix[i][j] = temp;
-            AMatrix[j][i] = temp;
+        for (int j=0; j<N; j++){
+            if(f_in>>temp){
+                AMatrix[i][j] = temp;
+            }
         }
     }
 }
@@ -94,35 +97,36 @@ int findWay(int** AMatrix, int* MarkNode, int N, int begin, int end, int*& arrNo
 }
 
 void feedFile(int** AMatrix, int* MarkNode, int N, int* arrNode, int len_way){
-    fstream f_in("output.txt", ios::out);
-    if(!f_in){
+    fstream f_out("output.txt", ios::out);
+    if(!f_out){
         cout << "---> Error, there are no input file" << endl;
         return;
     }
 
-    f_in << "Matrix:\n\t   ";
+    f_out << "Matrix:\n\t   ";
     for(int i=1; i<N+1; i++){
-        f_in << i << " ";
+        f_out << i << " ";
     }
-    f_in << "\n";
+    f_out << "\n";
     for(int i=0; i<N; i++){
-        f_in  << "\t" << i+1 << "| ";
+        f_out  << "\t" << i+1 << "| ";
         for(int j=0; j<N; j++){
-            f_in << AMatrix[i][j] << " ";
+            f_out << AMatrix[i][j] << " ";
         }
-        f_in << "\n";
+        f_out << "\n";
     }
 
-    f_in << "\nMarks of nodes:\n";
+    f_out << "\nMarks of nodes:\n";
     for(int i=0; i<N; i++){
-        f_in << "\t" << i+1 << ". " << MarkNode[i] << endl;
+        f_out << "\t" << i+1 << ". " << MarkNode[i] << endl;
     }
-    f_in << "\n";
-    f_in << "The shortest way from " << arrNode[len_way] << " to " << arrNode[0] << ": " << endl;
+    f_out << "\n";
+    f_out << "The shortest way from " << arrNode[len_way] << " to " << arrNode[0] << ": " << endl;
     for(int i=len_way-1; i>0; i--){
-        f_in << arrNode[i] << "->";
+        f_out << arrNode[i] << "->";
     }
-    f_in << arrNode[0];
+    f_out << arrNode[0];
+    f_out.close();
 }
 
 void DeleteMatr(int**& AMatrix, int N){
